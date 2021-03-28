@@ -1,15 +1,13 @@
-import random
-
 
 DIMENSION = 3
 SHIP_MAX = 3
 
 SHIPS_1 = [
-    (0, 2), (1, 0), (2, 1)
+    (1, 2), (2, 0), (0, 2)
 ]
 
 SHIPS_2 = [
-    (2, 1), (2, 0), (1, 1)
+    (2, 0), (2, 1), (1, 0)
 ]
 
 
@@ -81,6 +79,8 @@ class Player:
         self.grid = grid
         self.ship = ship
 
+        self.opponent = None
+
 
 class Game:
     def __init__(self, player_1_name, player_2_name, dimension, ship_max):
@@ -101,11 +101,7 @@ class Game:
         self.player_1.opponent = self.player_2
         self.player_2.opponent = self.player_1
 
-    # def select_random_player(self):
-    #     players = [self.player_1, self.player_2]
-    #     first_player = random.choice(players)
-    #
-    #     return first_player
+        self.winner = False
 
     def populate_ships(self):
         self.ship_1.all_ships = SHIPS_1
@@ -131,6 +127,30 @@ class Game:
 
         return False
 
+    def main_loop(self, player):
+
+        print('------------------------')
+        print(player.name, 'turn')
+        print('------------------------')
+
+        player.opponent.grid.describe()
+
+        to_sink_x = get_correct_inp('X')
+        to_sink_y = get_correct_inp('Y')
+
+        to_sink = (to_sink_x, to_sink_y)
+        print('MISSILE INVIATO:', to_sink)
+
+        if self.sink_ship(player.opponent.grid, (to_sink_x, to_sink_y)):
+            player.score += 1
+            print('PUNTEGGIO', player.name, '=', player.score)
+
+            if player.score == SHIP_MAX:
+                print(player.name, 'WIN!!!')
+                self.winner = True
+
+        player.opponent.grid.describe()
+
 
 def main():
 
@@ -153,55 +173,9 @@ def main():
 
     print('PARTITA COMINCIATA!')
 
-    while True:
-
-        # PLAYER 1 TURN
-
-        print('------------------------')
-        print(game.player_1.name, 'turn')
-        print('------------------------')
-
-        game.player_2.grid.describe()
-
-        to_sink_x = get_correct_inp('X')
-        to_sink_y = get_correct_inp('Y')
-
-        to_sink = (to_sink_x, to_sink_y)
-        print('MISSILE INVIATO:', to_sink)
-
-        if game.sink_ship(game.player_2.grid, (to_sink_x, to_sink_y)):
-            game.player_1.score += 1
-            print('PUNTEGGIO', player_1, '=', game.player_1.score)
-
-            if game.player_1.score == SHIP_MAX:
-                print(game.player_1.name, 'WIN!!!')
-                break
-
-        game.player_2.grid.describe()
-
-        # PLAYER 2 TURN
-
-        print('------------------------')
-        print(game.player_2.name, 'turn')
-        print('------------------------')
-
-        game.player_1.grid.describe()
-
-        to_sink_x = get_correct_inp('X')
-        to_sink_y = get_correct_inp('Y')
-
-        to_sink = (to_sink_x, to_sink_y)
-        print('MISSILE INVIATO:', to_sink)
-
-        if game.sink_ship(game.player_1.grid, to_sink):
-            game.player_2.score += 1
-            print('PUNTEGGIO', player_2, '=', game.player_2.score)
-
-            if game.player_2.score == SHIP_MAX:
-                print(game.player_2.name, 'WIN!!!')
-                break
-
-        game.player_1.grid.describe()
+    while game.winner is False:
+        game.main_loop(game.player_1)
+        game.main_loop(game.player_2)
 
     print('PARTITA TERMINATA')
 

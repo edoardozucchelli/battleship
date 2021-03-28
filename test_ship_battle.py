@@ -40,6 +40,11 @@ class TestShipBattle:
         assert player_1.is_cpu is False
         assert player_1.score == 0
 
+        assert player_1.grid is None
+        assert player_1.ship is None
+
+        assert player_1.opponent is None
+
         player_2 = Player(name='player_2', is_cpu=True)
 
         assert player_2.is_cpu is True
@@ -73,9 +78,11 @@ class TestShipBattle:
             ['E', 'E', 'E']
         ]
 
-        assert game.sink_ship(
+        game.sink_ship(
             grid=game.grid_1,
-            choice=(0, 0)) == sink_ship_x
+            choice=(0, 0))
+
+        assert game.grid_1.grid == sink_ship_x
 
         sink_ship_a = [
             ['X', 'A', 'E'],
@@ -83,4 +90,8 @@ class TestShipBattle:
             ['E', 'E', 'E']
         ]
 
-        assert game.sink_ship(grid=game.grid_1, choice=(0, 1)) == sink_ship_a
+        game.sink_ship(
+            grid=game.grid_1,
+            choice=(0, 1))\
+
+        assert game.grid_1.grid == sink_ship_a
